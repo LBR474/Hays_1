@@ -100,7 +100,7 @@ const HaysLogoModel: React.FC<HaysLogoModelProps> = ({
         r: 0,
         g: 0,
         b: 0,
-        duration: 3,
+        duration: 4,
         ease: "power3.out",
         onUpdate: () => { (mat.needsUpdate = true) },
       });
@@ -108,7 +108,7 @@ const HaysLogoModel: React.FC<HaysLogoModelProps> = ({
         r: 0,
         g: 0,
         b: 0,
-        duration: 3,
+        duration: 4,
         ease: "power3.out",
         onUpdate: () => { (mat.needsUpdate = true) },
       });
