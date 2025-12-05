@@ -1,0 +1,46 @@
+body {
+  margin: 0;
+  padding: 0;
+  background-image: url("../images/Hays_background_1.png");
+  background-size: cover; /* fills the screen */
+  background-repeat: no-repeat; /* don’t tile the image */
+  background-position: center; /* keep the main part centred */
+  height: 100vh; /* make body fill full screen */
+  width: 100vw;
+  
+}
+
+.demo-warning {
+  position: fixed;
+  top: 400px;
+  left: 50%;
+  width: 80%;
+  transform: translateX(-50%) rotate(-20deg);
+  background: rgba(255, 0, 0, 0.7);
+  color: white;
+  font-size: 24px;
+  font-weight: bold;
+  padding: 10px 20px;
+  z-index: 9999;
+  pointer-events: none;
+
+  /* Flexbox for centering text */
+  display: flex;
+  justify-content: center; /* horizontal center */
+  align-items: center; /* vertical center */
+  text-align: center; /* in case the text wraps to multiple lines */
+}
+
+#hays-3d-container {
+  position: absolute; /* allows free placement */
+  top: 70px; /* adjust this to move down */
+  left: 530px;
+  width: 170px;
+  /* match Hays logo width if needed */
+  height: 50px;
+  /* amount of space for your R3F animation */
+  background: transparent;
+  /* or transparent */
+  margin-top: 10px;
+  
+}

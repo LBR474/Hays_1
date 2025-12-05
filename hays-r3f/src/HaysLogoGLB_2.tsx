@@ -1,0 +1,166 @@
+import React, { Suspense, useEffect, useRef } from "react";
+import { Canvas } from "@react-three/fiber";
+import { OrbitControls, useGLTF, OrthographicCamera } from "@react-three/drei";
+import {
+  MeshStandardMaterial,
+  Mesh,
+  Color,
+  DirectionalLight,
+  AmbientLight,
+  Group,
+  // MeshBasicMaterial,
+  // PlaneGeometry,
+  Mesh as ThreeMesh,
+} from "three";
+import gsap from "gsap";
+
+interface HaysLogoModelProps {
+  onMaterialsReady: (meshes: Mesh[]) => void;
+  modelRef: React.RefObject<Group | null>;
+}
+
+const HaysLogoModel: React.FC<HaysLogoModelProps> = ({
+  onMaterialsReady,
+  modelRef,
+}) => {
+  const { scene } = useGLTF("models/HAYS_logo_2.glb");
+  const blueTriangleRef = useRef<Mesh | null>(null);
+
+  useEffect(() => {
+    const meshes: Mesh[] = [];
+
+    scene.traverse((child: any) => {
+      if (!child.isMesh) return;
+
+      const mesh = child as Mesh;
+
+      if (mesh.name === "Blue_triangle") {
+        mesh.material = new MeshStandardMaterial({
+          color: new Color(0xaeede1),
+          metalness: 0.3,
+          roughness: 0.4,
+        });
+        blueTriangleRef.current = mesh;
+      } else {
+        mesh.material = new MeshStandardMaterial({
+          color: new Color("#000000"),
+          metalness: 1,
+          roughness: 0.3,
+        });
+      }
+
+      mesh.castShadow = true;
+      mesh.receiveShadow = true;
+      meshes.push(mesh);
+    });
+
+    onMaterialsReady(meshes);
+
+    // Animate Blue Triangle
+    if (blueTriangleRef.current) {
+      const tri = blueTriangleRef.current;
+      const finalPos = tri.position.clone();
+      const finalRot = tri.rotation.clone();
+
+      tri.position.set(finalPos.x - 3, finalPos.y, finalPos.z - 3);
+      tri.rotation.set(finalRot.x, finalRot.y, finalRot.z + Math.PI / 4);
+
+      gsap.to(tri.position, {
+        x: finalPos.x,
+        y: finalPos.y,
+        z: finalPos.z,
+        duration: 3,
+        ease: "power3.out",
+      });
+
+      gsap.to(tri.rotation, {
+        x: finalRot.x,
+        y: finalRot.y,
+        z: finalRot.z,
+        duration: 3,
+        ease: "power3.out",
+      });
+    }
+  }, [scene, onMaterialsReady]);
+
+  return <primitive ref={modelRef} object={scene} scale={1} />;
+};
+
+useGLTF.preload("models/HAYS_logo_2.glb");
+
+const HaysLogo3D: React.FC = () => {
+  const meshesRef = useRef<Mesh[]>([]);
+  const ambientLightRef = useRef<AmbientLight | null>(null);
+  const directionalLightRef = useRef<DirectionalLight | null>(null);
+  const modelRef = useRef<Group | null>(null);
+
+  // Plane ref for sliding animation
+  //const coverPlaneRef = useRef<ThreeMesh | null>(null);
+
+  const CoverPlane: React.FC = () => {
+    const planeRef = useRef<ThreeMesh>(null);
+
+    useEffect(() => {
+      if (!planeRef.current) return;
+
+      // Ensure the animation runs in the next tick after mount
+      requestAnimationFrame(() => {
+        gsap.to(planeRef.current!.position, {
+          x: 10, // slide off to the right
+          duration: 5,
+          ease: "power3.out",
+        });
+      });
+    }, []);
+
+    return (
+      <mesh ref={planeRef} position={[0, 0, 6]}>
+        <planeGeometry args={[10, 10]} />
+        <meshStandardMaterial
+          color={0xffffff} // base color (can be anything)
+          emissive={0xffffff} // makes it glow with this color
+          emissiveIntensity={6} // full intensity
+          metalness={0}
+          roughness={1}
+        />
+      </mesh>
+    );
+  };
+
+
+  return (
+    <Canvas shadows style={{ background: "white" }}>
+      <OrthographicCamera
+        makeDefault
+        position={[0, 1, 12]}
+        zoom={30}
+        near={-100}
+        far={100}
+      />
+
+      <ambientLight ref={ambientLightRef} intensity={0.5} />
+      <directionalLight
+        ref={directionalLightRef}
+        position={[-0.5, 1, 5]}
+        intensity={3}
+        castShadow
+        shadow-mapSize-width={4096}
+        shadow-mapSize-height={4096}
+      />
+
+      {/* Cover Plane */}
+      <CoverPlane />
+
+      <Suspense fallback={null}>
+        <HaysLogoModel
+          onMaterialsReady={(meshes) => (meshesRef.current = meshes)}
+          modelRef={modelRef}
+        />
+      </Suspense>
+
+      <OrbitControls enableZoom={false} autoRotateSpeed={1} />
+    </Canvas>
+  );
+};
+
+export default HaysLogo3D;
