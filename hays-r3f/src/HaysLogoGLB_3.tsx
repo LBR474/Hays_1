@@ -98,9 +98,9 @@ const HaysLogoModel: React.FC<HaysLogoModelProps> = ({
       const mat = mesh.material as MeshStandardMaterial;
       gsap.to(mat.color, {
         r: 0,
-        g: 0,
+        g: 1,
         b: 0,
-        duration: 10,
+        duration: 4,
         ease: "power3.out",
         onUpdate: () => { (mat.needsUpdate = true) },
       });
