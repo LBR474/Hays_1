@@ -2,8 +2,8 @@
 node_modules/
 
 # Build outputs
-dist/
-hays-r3f/dist/
+# dist/
+# hays-r3f/dist/
 
 # OS/system files
 .DS_Store
